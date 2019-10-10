@@ -1,5 +1,7 @@
 #pragma once
 // ---- 派生的交易类 ---- //
+
+// 包含交易相关的指令，如报单。
 #include "CTP_API/ThostFtdcTraderApi.h"
 
 class CustomTradeSpi : public CThostFtdcTraderSpi

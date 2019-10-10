@@ -16,6 +16,8 @@ extern std::unordered_map<std::string, TickToKlineHelper> g_KlineHash; // kÏß´æ´
 
 // ---- ctp_api»Øµ÷º¯Êý ---- //
 // Á¬½Ó³É¹¦Ó¦´ð
+// ÒòÎªÊÇÒì²½½Ó¿Ú£¬ÕâÀïÁ¬½Ó¡¢µÇÂ¼¡¢¶©ÔÄÐÐÇéÊÇÒ»²½Ì×Ò»²½À´µ÷ÓÃµÄ£¬ÔÚÔËÐÐ¹ý³ÌÖÐ£¬»áÆô¶¯Ò»¸öÐÐÇéÏß³Ì£¬½»Ò×ËùÃ¿500ms»áÍÆËÍÒ»¸ö¶©ÔÄµÄÐÐÇétickÊý¾Ý£¬Òò´Ë£¬Ä³Ð©½Ó¿Ú»á±»Á¬Ðø¼ä¸ôµ÷ÓÃ£¬Ö±µ½Á¬½Ó¹Ø±Õ
+// ÊÕµ½ÐÐÇéºó³ýÁË´æÔÚÄÚ´æ£¬Ò²¿ÉÒÔÓÃÎÄ±¾ÎÄ¼þ»òÕßÊý¾Ý¿âµÈÐÎÊ½´æ´¢ÆðÀ´£¬ÔÚÕâÀï´´½¨³õÊ¼ÎÄ¼þ»òÕß½¨¿â
 void CustomMdSpi::OnFrontConnected()
 {
 	std::cout << "=====½¨Á¢ÍøÂçÁ¬½Ó³É¹¦=====" << std::endl;
@@ -181,6 +183,8 @@ void CustomMdSpi::OnRspUnSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpec
 }
 
 // ÐÐÇéÏêÇéÍ¨Öª
+// Ã¿¸ötickÊÀ¼ä½ÚµãÏµÍ³¶¼»áµ÷ÓÃÕâ¸öº¯Êý£¬ÍÆËÍ¾ßÌåµÄÐÐÇé½ØÃæÊý¾Ý
+// ¿ÉÒÔÔÚ´Ë´¦½«ÐÐÇéÐ´µ½±¾µØ£¬»òÕß×öÒ»Ð©Êý¾Ý´¦Àí£¨ÀýÈçÊµÊ±KÏß¼ÆËã£¬ÅÐ¶ÏÊÇ·ñ´¥·¢²ßÂÔµÈ£©
 void CustomMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData)
 {
 	// ´òÓ¡ÐÐÇé£¬×Ö¶Î½Ï¶à£¬½ØÈ¡²¿·Ö

@@ -332,6 +332,7 @@ void CustomTradeSpi::reqQueryInvestorPosition()
 		std::cerr << "--->>>发送投资者持仓查询请求失败" << std::endl;
 }
 
+// 下单操作
 void CustomTradeSpi::reqOrderInsert()
 {
 	CThostFtdcInputOrderField orderInsertReq;
@@ -430,6 +431,7 @@ void CustomTradeSpi::reqOrderInsert(
 		std::cerr << "--->>>发送报单录入请求失败" << std::endl;
 }
 
+// 报单操作
 void CustomTradeSpi::reqOrderAction(CThostFtdcOrderField *pOrder)
 {
 	static bool orderActionSentFlag = false; // 是否发送了报单

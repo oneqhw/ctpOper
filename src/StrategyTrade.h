@@ -1,6 +1,6 @@
 #pragma once
 // ---- 简单策略交易的类 ---- //
-
+// 策略类
 #include <functional>
 #include "CTP_API/ThostFtdcUserApiStruct.h"
 #include "TickToKlineHelper.h"

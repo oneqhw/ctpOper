@@ -1,5 +1,6 @@
 #pragma once
 // ---- 计算k线的类 ---- //
+// 处理时序数据，转换成K线的类
 
 #include <vector>
 #include <string>
