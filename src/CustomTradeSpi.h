@@ -3,6 +3,7 @@
 
 // 包含交易相关的指令，如报单。
 #include "CTP_API/ThostFtdcTraderApi.h"
+#include "constant.h"
 
 class CustomTradeSpi : public CThostFtdcTraderSpi
 {

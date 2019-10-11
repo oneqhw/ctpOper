@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include "constant.h"
 
 // k线数据结构
 struct KLineDataType

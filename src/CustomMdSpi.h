@@ -4,6 +4,7 @@
 
 // 包含获取行情相关的指令。
 #include "CTP_API/ThostFtdcMdApi.h"
+#include "constant.h"
 
 class CustomMdSpi: public CThostFtdcMdSpi
 {
