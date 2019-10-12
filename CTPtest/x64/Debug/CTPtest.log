@@ -1,0 +1,35 @@
+﻿生成启动时间为 2019/10/12 16:32:36。
+     1>项目“D:\Tonny\Doc\Project\mine\cpp\ctpOper\CTPtest\CTPtest.vcxproj”在节点 2 上(Rebuild 个目标)。
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(388,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (CTPtest.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+     1>ClCompile:
+         D:\Tonny\App\vs2013\VC\bin\x86_amd64\CL.exe /c /I..\src\mysql\include /Zi /nologo /W3 /WX- /sdl /Od /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt ..\src\CustomMdSpi.cpp ..\src\CustomTradeSpi.cpp ..\src\main.cpp ..\src\mdiMain.cpp ..\src\MySQLOper.cpp ..\src\StrategyTrade.cpp ..\src\testdb.cpp ..\src\TickToKlineHelper.cpp ..\src\tradeMain.cpp
+         tradeMain.cpp
+         TickToKlineHelper.cpp
+         testdb.cpp
+         StrategyTrade.cpp
+     1>..\src\StrategyTrade.cpp(23): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+         MySQLOper.cpp
+     1>..\src\MySQLOper.cpp(120): warning C4018: “<”: 有符号/无符号不匹配
+     1>..\src\MySQLOper.cpp(142): warning C4018: “<”: 有符号/无符号不匹配
+     1>..\src\MySQLOper.cpp(156): warning C4018: “<”: 有符号/无符号不匹配
+         mdiMain.cpp
+         main.cpp
+         CustomTradeSpi.cpp
+         CustomMdSpi.cpp
+         正在生成代码...
+       Link:
+         D:\Tonny\App\vs2013\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Tonny\Doc\Project\mine\cpp\ctpOper\x64\Debug\ctp-oper.exe" /INCREMENTAL /NOLOGO /LIBPATH:..\src\mysql\lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Tonny\Doc\Project\mine\cpp\ctpOper\x64\Debug\ctp-oper.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Tonny\Doc\Project\mine\cpp\ctpOper\x64\Debug\ctp-oper.lib" /MACHINE:X64 x64\Debug\CustomMdSpi.obj
+         x64\Debug\CustomTradeSpi.obj
+         x64\Debug\main.obj
+         x64\Debug\mdiMain.obj
+         x64\Debug\MySQLOper.obj
+         x64\Debug\StrategyTrade.obj
+         x64\Debug\testdb.obj
+         x64\Debug\TickToKlineHelper.obj
+         x64\Debug\tradeMain.obj
+         CTPtest.vcxproj -> D:\Tonny\Doc\Project\mine\cpp\ctpOper\x64\Debug\ctp-oper.exe
+     1>已完成生成项目“D:\Tonny\Doc\Project\mine\cpp\ctpOper\CTPtest\CTPtest.vcxproj”(Rebuild 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:05.12

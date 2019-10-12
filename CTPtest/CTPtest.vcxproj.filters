@@ -13,15 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="源文件\mdi">
+      <UniqueIdentifier>{a811448e-b3fd-4b60-9d16-1ff3137146c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\trade">
+      <UniqueIdentifier>{1319018f-a39e-4f7c-9147-c48f15f60a77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\db">
+      <UniqueIdentifier>{130a2bca-0cb6-415d-bdd1-de5e82840fe3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\CustomMdSpi.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\CustomTradeSpi.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\TickToKlineHelper.cpp">
@@ -29,6 +32,24 @@
     </ClCompile>
     <ClCompile Include="..\src\StrategyTrade.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\CustomMdSpi.cpp">
+      <Filter>源文件\mdi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mdiMain.cpp">
+      <Filter>源文件\mdi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\CustomTradeSpi.cpp">
+      <Filter>源文件\trade</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tradeMain.cpp">
+      <Filter>源文件\trade</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MySQLOper.cpp">
+      <Filter>源文件\db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\testdb.cpp">
+      <Filter>源文件\db</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +63,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\StrategyTrade.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\constant.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MySQLOper.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -19,7 +19,7 @@ using namespace std;
 
 // 交易参数
 CThostFtdcTraderApi *g_pTradeUserApi = nullptr;                    // 交易指针
-char gTradeFrontAddr[] = "tcp://180.168.146.187:10100";            // 模拟交易前置地址
+char gTradeFrontAddr[] = "tcp://180.168.146.187:10101";            // 模拟交易前置地址
 TThostFtdcInstrumentIDType g_pTradeInstrumentID = "zn1705";        // 所交易的合约代码
 TThostFtdcDirectionType gTradeDirection = THOST_FTDC_D_Sell;       // 买卖方向
 TThostFtdcPriceType gLimitPrice = 22735;                           // 交易价格
@@ -54,5 +54,4 @@ int main()
 	getchar();
 	return 0;
 }
-
 */
