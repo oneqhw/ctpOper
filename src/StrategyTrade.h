@@ -5,8 +5,6 @@
 #include "CTP_API/ThostFtdcUserApiStruct.h"
 #include "TickToKlineHelper.h"
 #include "CustomTradeSpi.h"
-#include "constant.h"
-
 typedef void(*reqOrderInsertFun)(
 	TThostFtdcInstrumentIDType instrumentID,
 	TThostFtdcPriceType price,

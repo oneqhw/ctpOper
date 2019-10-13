@@ -2,7 +2,6 @@
 #include <fstream>
 #include <unordered_map>
 #include "CustomMdSpi.h"
-#include "TickToKlineHelper.h"
 #include "ThreadPool.h"
 #include "MySQLOper.h"
 
@@ -14,10 +13,8 @@ extern TThostFtdcInvestorIDType gInvesterID;     // 投资者账户名
 extern TThostFtdcPasswordType gInvesterPassword; // 投资者密码
 extern char *g_pInstrumentID[];                  // 行情合约代码列表，中、上、大、郑交易所各选一种
 extern int instrumentNum;                        // 行情合约订阅数量
-extern std::unordered_map<std::string, TickToKlineHelper> g_KlineHash; // k线存储表
 
-ThreadPool pool(4);
-
+ThreadPool pool(5);								// 线程池，用于异步写数据到数据库
 
 // ---- ctp_api回调函数 ---- //
 // 连接成功应答
@@ -25,7 +22,7 @@ ThreadPool pool(4);
 // 收到行情后除了存在内存，也可以用文本文件或者数据库等形式存储起来，在这里创建初始文件或者建库
 void CustomMdSpi::OnFrontConnected()
 {
-	std::cout << "=====建立网络连接成功=====" << std::endl;
+	std::cout << "建立网络连接成功..." << std::endl;
 	// 开始登录
 	CThostFtdcReqUserLoginField loginReq;
 	memset(&loginReq, 0, sizeof(loginReq));
@@ -35,22 +32,22 @@ void CustomMdSpi::OnFrontConnected()
 	static int requestID = 0; // 请求编号
 	int rt = g_pMdUserApi->ReqUserLogin(&loginReq, requestID);
 	if (!rt)
-		std::cout << ">>>>>>发送登录请求成功" << std::endl;
+		std::cout << "发送登录请求成功..." << std::endl;
 	else
-		std::cerr << "--->>>发送登录请求失败" << std::endl;
+		std::cerr << "发送登录请求失败..." << std::endl;
 }
 
 // 断开连接通知
 void CustomMdSpi::OnFrontDisconnected(int nReason)
 {
-	std::cerr << "=====网络连接断开=====" << std::endl;
+	std::cerr << "网络连接断开..." << std::endl;
 	std::cerr << "错误码： " << nReason << std::endl;
 }
 
 // 心跳超时警告
 void CustomMdSpi::OnHeartBeatWarning(int nTimeLapse)
 {
-	std::cerr << "=====网络心跳超时=====" << std::endl;
+	std::cerr << "网络心跳超时..." << std::endl;
 	std::cerr << "距上次连接时间： " << nTimeLapse << std::endl;
 }
 
@@ -64,7 +61,7 @@ void CustomMdSpi::OnRspUserLogin(
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (!bResult)
 	{
-		std::cout << "=====账户登录成功=====" << std::endl;
+		std::cout << "账户登录成功..." << std::endl;
 		std::cout << "交易日： " << pRspUserLogin->TradingDay << std::endl;
 		std::cout << "登录时间： " << pRspUserLogin->LoginTime << std::endl;
 		std::cout << "经纪商： " << pRspUserLogin->BrokerID << std::endl;
@@ -72,9 +69,9 @@ void CustomMdSpi::OnRspUserLogin(
 		// 开始订阅行情
 		int rt = g_pMdUserApi->SubscribeMarketData(g_pInstrumentID, instrumentNum);
 		if (!rt)
-			std::cout << ">>>>>>发送订阅行情请求成功" << std::endl;
+			std::cout << "发送订阅行情请求成功..." << std::endl;
 		else
-			std::cerr << "--->>>发送订阅行情请求失败" << std::endl;
+			std::cerr << "发送订阅行情请求失败..." << std::endl;
 	}
 	else
 		std::cerr << "返回错误--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << std::endl;
@@ -90,7 +87,7 @@ void CustomMdSpi::OnRspUserLogout(
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (!bResult)
 	{
-		std::cout << "=====账户登出成功=====" << std::endl;
+		std::cout << "账户登出成功..." << std::endl;
 		std::cout << "经纪商： " << pUserLogout->BrokerID << std::endl;
 		std::cout << "帐户名： " << pUserLogout->UserID << std::endl;
 	}
@@ -116,37 +113,11 @@ void CustomMdSpi::OnRspSubMarketData(
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (!bResult)
 	{
-		std::cout << "=====订阅行情成功=====" << std::endl;
+		std::cout << "订阅行情成功..." << std::endl;
 		std::cout << "合约代码： " << pSpecificInstrument->InstrumentID << std::endl;
-		/*
-		// 如果需要存入文件或者数据库，在这里创建表头,不同的合约单独存储
-		char filePath[100] = {'\0'};
-		sprintf(filePath, "%s_market_data.csv", pSpecificInstrument->InstrumentID);
-		std::ofstream outFile;
-		outFile.open(filePath, std::ios::out); // 新开文件
-		outFile << "合约代码" << ","
-		<< "更新时间" << ","
-		<< "最新价" << ","
-		<< "成交量" << ","
-		<< "买价一" << ","
-		<< "买量一" << ","
-		<< "卖价一" << ","
-		<< "卖量一" << ","
-		<< "持仓量" << ","
-		<< "换手率"
-		<< std::endl;
-		outFile.close();
-		*/
 	}
 	else
 		std::cerr << "返回错误--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << std::endl;
-	/*
-	int rt = g_pMdUserApi->SubscribeMarketData(g_pInstrumentID, instrumentNum);
-	if (!rt)
-	std::cout << ">>>>>>发送订阅行情请求成功" << std::endl;
-	else
-	std::cerr << "--->>>发送订阅行情请求失败" << std::endl;
-	*/
 }
 
 // 取消订阅行情应答
@@ -159,7 +130,7 @@ void CustomMdSpi::OnRspUnSubMarketData(
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (!bResult)
 	{
-		std::cout << "=====取消订阅行情成功=====" << std::endl;
+		std::cout << "取消订阅行情成功..." << std::endl;
 		std::cout << "合约代码： " << pSpecificInstrument->InstrumentID << std::endl;
 	}
 	else
@@ -176,7 +147,7 @@ void CustomMdSpi::OnRspSubForQuoteRsp(
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (!bResult)
 	{
-		std::cout << "=====订阅询价成功=====" << std::endl;
+		std::cout << "订阅询价成功..." << std::endl;
 		std::cout << "合约代码： " << pSpecificInstrument->InstrumentID << std::endl;
 	}
 	else
@@ -189,7 +160,7 @@ void CustomMdSpi::OnRspUnSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpec
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (!bResult)
 	{
-		std::cout << "=====取消订阅询价成功=====" << std::endl;
+		std::cout << "取消订阅询价成功..." << std::endl;
 		std::cout << "合约代码： " << pSpecificInstrument->InstrumentID << std::endl;
 	}
 	else
@@ -202,75 +173,74 @@ void CustomMdSpi::OnRspUnSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpec
 void CustomMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData)
 {
 	// 打印行情，字段较多，截取部分
-	std::cout << "=====获得深度行情=====" << std::endl;
+	std::cout << "获得深度行情..." << std::endl;
 	std::cout << "交易日： " << pDepthMarketData->TradingDay << std::endl;
 	std::cout << "交易所代码： " << pDepthMarketData->ExchangeID << std::endl;
 	std::cout << "合约代码： " << pDepthMarketData->InstrumentID << std::endl;
 	std::cout << "合约在交易所的代码： " << pDepthMarketData->ExchangeInstID << std::endl;
 	std::cout << "最新价： " << pDepthMarketData->LastPrice << std::endl;
 	std::cout << "数量： " << pDepthMarketData->Volume << std::endl;
-	
-	pool.enqueue([](CThostFtdcDepthMarketDataField *pDepthMarketData){
+
+	// 定义局部变量，防止发生线程共享变量问题
+	CThostFtdcDepthMarketDataField thostFtdcDepthMarketDataField;
+	memcpy(thostFtdcDepthMarketDataField.TradingDay, pDepthMarketData->TradingDay, sizeof(pDepthMarketData->TradingDay));
+	memcpy(thostFtdcDepthMarketDataField.InstrumentID, pDepthMarketData->InstrumentID, sizeof(pDepthMarketData->InstrumentID));
+	thostFtdcDepthMarketDataField.AveragePrice = pDepthMarketData->AveragePrice;
+	thostFtdcDepthMarketDataField.LastPrice = pDepthMarketData->LastPrice;
+	thostFtdcDepthMarketDataField.BidPrice1 = pDepthMarketData->BidPrice1;
+	thostFtdcDepthMarketDataField.BidVolume1 = pDepthMarketData->BidVolume1;
+	thostFtdcDepthMarketDataField.BidPrice2 = pDepthMarketData->BidPrice2;
+	thostFtdcDepthMarketDataField.BidVolume2 = pDepthMarketData->BidVolume2;
+	thostFtdcDepthMarketDataField.AskPrice1 = pDepthMarketData->AskPrice1;
+	thostFtdcDepthMarketDataField.AskVolume1 = pDepthMarketData->AskVolume1;
+	thostFtdcDepthMarketDataField.AskPrice2 = pDepthMarketData->AskPrice2;
+	thostFtdcDepthMarketDataField.AskVolume2 = pDepthMarketData->AskVolume2;
+
+	//启用线程异步入库
+	pool.enqueue([](CThostFtdcDepthMarketDataField thostFtdcDepthMarketDataField){
 		char* colums = "trade_day,instrument_id,average_price,last_price,bid_price1,bid_volume1,bid_price2,bid_volume2,ask_price1,ask_volume1,ask_price2,ask_volume2,mark";
 		char values[300];
 		sprintf(values, "'%s','%s',%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,0",
-			pDepthMarketData->TradingDay,
-			pDepthMarketData->InstrumentID,
-			pDepthMarketData->AveragePrice > 999999999999 || pDepthMarketData->AveragePrice < -9999999999 ? 0.0 : pDepthMarketData->AveragePrice,
-			pDepthMarketData->LastPrice > 999999999999 || pDepthMarketData->LastPrice < -9999999999 ? 0.0 : pDepthMarketData->LastPrice,
-			pDepthMarketData->BidPrice1 > 999999999999 || pDepthMarketData->BidPrice1 < -9999999999 ? 0.0 : pDepthMarketData->BidPrice1,
-			pDepthMarketData->BidVolume1 > 999999999999 || pDepthMarketData->BidVolume1 < -9999999999 ? 0.0 : pDepthMarketData->BidVolume1,
-			pDepthMarketData->BidPrice2 > 999999999999 || pDepthMarketData->BidPrice2 < -9999999999 ? 0.0 : pDepthMarketData->BidPrice2,
-			pDepthMarketData->BidVolume2 > 999999999999 || pDepthMarketData->BidVolume2 < -9999999999 ? 0.0 : pDepthMarketData->BidVolume2,
-			pDepthMarketData->AskPrice1 > 999999999999 || pDepthMarketData->AskPrice1 < -9999999999 ? 0.0 : pDepthMarketData->AskPrice1,
-			pDepthMarketData->AskVolume1 > 999999999999 || pDepthMarketData->AskVolume1 < -9999999999 ? 0.0 : pDepthMarketData->AskVolume1,
-			pDepthMarketData->AskPrice2 > 99999999999 || pDepthMarketData->AskPrice2 < -99999999999 ? 0.0 : pDepthMarketData->AskPrice2,
-			pDepthMarketData->AskVolume2 > 999999999999 || pDepthMarketData->AskVolume2 < -9999999999 ? 0.0 : pDepthMarketData->AskVolume2);
+			thostFtdcDepthMarketDataField.TradingDay,
+			thostFtdcDepthMarketDataField.InstrumentID,
+			thostFtdcDepthMarketDataField.AveragePrice > 999999999999 || thostFtdcDepthMarketDataField.AveragePrice < -9999999999 ? 0.0 : thostFtdcDepthMarketDataField.AveragePrice,
+			thostFtdcDepthMarketDataField.LastPrice > 999999999999 || thostFtdcDepthMarketDataField.LastPrice < -9999999999 ? 0.0 : thostFtdcDepthMarketDataField.LastPrice,
+			thostFtdcDepthMarketDataField.BidPrice1 > 999999999999 || thostFtdcDepthMarketDataField.BidPrice1 < -9999999999 ? 0.0 : thostFtdcDepthMarketDataField.BidPrice1,
+			thostFtdcDepthMarketDataField.BidVolume1 > 999999999999 || thostFtdcDepthMarketDataField.BidVolume1 < -9999999999 ? 0.0 : thostFtdcDepthMarketDataField.BidVolume1,
+			thostFtdcDepthMarketDataField.BidPrice2 > 999999999999 || thostFtdcDepthMarketDataField.BidPrice2 < -9999999999 ? 0.0 : thostFtdcDepthMarketDataField.BidPrice2,
+			thostFtdcDepthMarketDataField.BidVolume2 > 999999999999 || thostFtdcDepthMarketDataField.BidVolume2 < -9999999999 ? 0.0 : thostFtdcDepthMarketDataField.BidVolume2,
+			thostFtdcDepthMarketDataField.AskPrice1 > 999999999999 || thostFtdcDepthMarketDataField.AskPrice1 < -9999999999 ? 0.0 : thostFtdcDepthMarketDataField.AskPrice1,
+			thostFtdcDepthMarketDataField.AskVolume1 > 999999999999 || thostFtdcDepthMarketDataField.AskVolume1 < -9999999999 ? 0.0 : thostFtdcDepthMarketDataField.AskVolume1,
+			thostFtdcDepthMarketDataField.AskPrice2 > 99999999999 || thostFtdcDepthMarketDataField.AskPrice2 < -99999999999 ? 0.0 : thostFtdcDepthMarketDataField.AskPrice2,
+			thostFtdcDepthMarketDataField.AskVolume2 > 999999999999 || thostFtdcDepthMarketDataField.AskVolume2 < -9999999999 ? 0.0 : thostFtdcDepthMarketDataField.AskVolume2);
 		MySQLOper mdb;
-		mdb.connect("localhost", "root", "1qaz2wsx");
-		mdb.usedb("clouddb01");
-		mdb.insertitem("market_data_rb", values, colums);
+		try
+		{
+			mdb.connect("localhost", "root", "1qaz2wsx");
+			mdb.usedb("clouddb01");
+			mdb.insertitem("market_data_rb", values, colums);
+		}
+		catch (...)
+		{
+			std::cerr << "数据入库发生异常" << std::endl;
+		}
 		mdb.disconnect();
-	}, pDepthMarketData);
-
-	// 如果只获取某一个合约行情，可以逐tick地存入文件或数据库
-	/*
-	char filePath[100] = {'\0'};
-	sprintf(filePath, "%s_market_data.csv", pDepthMarketData->InstrumentID);
-	std::ofstream outFile;
-	outFile.open(filePath, std::ios::app); // 文件追加写入
-	outFile << pDepthMarketData->InstrumentID << ","
-	<< pDepthMarketData->UpdateTime << "." << pDepthMarketData->UpdateMillisec << ","
-	<< pDepthMarketData->LastPrice << ","
-	<< pDepthMarketData->Volume << ","
-	<< pDepthMarketData->BidPrice1 << ","
-	<< pDepthMarketData->BidVolume1 << ","
-	<< pDepthMarketData->AskPrice1 << ","
-	<< pDepthMarketData->AskVolume1 << ","
-	<< pDepthMarketData->OpenInterest << ","
-	<< pDepthMarketData->Turnover << std::endl;
-	outFile.close();
+	}, thostFtdcDepthMarketDataField);
 
 	// 计算实时k线
+	/*
 	std::string instrumentKey = std::string(pDepthMarketData->InstrumentID);
 	if (g_KlineHash.find(instrumentKey) == g_KlineHash.end())
 	g_KlineHash[instrumentKey] = TickToKlineHelper();
 	g_KlineHash[instrumentKey].KLineFromRealtimeData(pDepthMarketData);
 	*/
-
-	// 取消订阅行情
-	//int rt = g_pMdUserApi->UnSubscribeMarketData(g_pInstrumentID, instrumentNum);
-	//if (!rt)
-	//	std::cout << ">>>>>>发送取消订阅行情请求成功" << std::endl;
-	//else
-	//	std::cerr << "--->>>发送取消订阅行情请求失败" << std::endl;
 }
 
 // 询价详情通知
 void CustomMdSpi::OnRtnForQuoteRsp(CThostFtdcForQuoteRspField *pForQuoteRsp)
 {
 	// 部分询价结果
-	std::cout << "=====获得询价结果=====" << std::endl;
+	std::cout << "获得询价结果..." << std::endl;
 	std::cout << "交易日： " << pForQuoteRsp->TradingDay << std::endl;
 	std::cout << "交易所代码： " << pForQuoteRsp->ExchangeID << std::endl;
 	std::cout << "合约代码： " << pForQuoteRsp->InstrumentID << std::endl;

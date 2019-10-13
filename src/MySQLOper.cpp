@@ -106,7 +106,7 @@ void MySQLOper::createtb(const string &table, const string &elements) {
 
 vector<vector<string>> MySQLOper::selectitem(const string &table, const string &value) {
 	string str = "select " + value + " from " + table;
-	cout << str << endl;
+	//cout << str << endl;
 	if (mysql_query(sql, str.c_str())) {
 		//cout << "select error!" << endl;
 		return{};
@@ -115,7 +115,7 @@ vector<vector<string>> MySQLOper::selectitem(const string &table, const string &
 	vector<vector<string>> ret;
 	res = mysql_use_result(sql);
 	while ((row = mysql_fetch_row(res)) != nullptr) {
-		int i = 0;
+		unsigned int i = 0;
 		vector<string> temp;
 		while (i < mysql_num_fields(res))
 			temp.push_back(row[i++]);
@@ -137,7 +137,7 @@ vector<vector<string>> MySQLOper::selectitem(const string &table, const string &
 	vector<vector<string>> ret;
 	res = mysql_use_result(sql);
 	while ((row = mysql_fetch_row(res)) != nullptr) {
-		int i = 0;
+		unsigned int i = 0;
 		vector<string> temp;
 		while (i < mysql_num_fields(res))
 			temp.push_back(row[i++]);
@@ -152,7 +152,7 @@ void MySQLOper::showres() {
 	res = mysql_use_result(sql);
 	//cout << "****************The result is:****************" << endl;
 	while ((row = mysql_fetch_row(res)) != nullptr) {
-		int i = 0;
+		unsigned int i = 0;
 		while (i < mysql_num_fields(res))
 			cout << row[i++] << "\t";
 		cout << endl;
@@ -164,17 +164,17 @@ void MySQLOper::showres() {
 
 void MySQLOper::insertitem(const string &table, const string &value) {
 	string str = "insert into " + table + " values (" + value + ")";
-	cout << str << endl;
+	//cout << str << endl;
 	if (mysql_query(sql, str.c_str())) {
 		//cout << "insert error!" << endl;
 		return;
 	}
-	cout << "insert success!" << endl;
+	//cout << "insert success!" << endl;
 }
 
 void MySQLOper::insertitem(const string &table, const string &value, const string &col) {
 	string str = "insert into " + table + " (" + col + ") values (" + value + ")";
-	cout << str << endl;
+	//cout << str << endl;
 	if (mysql_query(sql, str.c_str())) {
 		//cout << "insert error!" << endl;
 		return;
@@ -184,7 +184,7 @@ void MySQLOper::insertitem(const string &table, const string &value, const strin
 
 void MySQLOper::deleteitem(const string &table, const string &value) {
 	string str = "delete from " + table + " where " + value;
-	cout << str << endl;
+	//cout << str << endl;
 	if (mysql_query(sql, str.c_str())) {
 		//cout << "delete error!" << endl;
 		return;
@@ -194,7 +194,7 @@ void MySQLOper::deleteitem(const string &table, const string &value) {
 
 void MySQLOper::updateitem(const string &table, const string &value, const string &limits) {
 	string str = "update " + table + " set " + value + " where " + limits;
-	cout << str << endl;
+	//cout << str << endl;
 	if (mysql_query(sql, str.c_str())) {
 		//cout << "delete error!" << endl;
 		return;
