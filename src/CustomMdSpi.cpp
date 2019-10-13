@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "CustomMdSpi.h"
 #include "TickToKlineHelper.h"
+#include "ThreadPool.h"
 #include "MySQLOper.h"
 
 // ---- 全局参数声明 ---- //
@@ -14,6 +15,8 @@ extern TThostFtdcPasswordType gInvesterPassword; // 投资者密码
 extern char *g_pInstrumentID[];                  // 行情合约代码列表，中、上、大、郑交易所各选一种
 extern int instrumentNum;                        // 行情合约订阅数量
 extern std::unordered_map<std::string, TickToKlineHelper> g_KlineHash; // k线存储表
+
+ThreadPool pool(4);
 
 
 // ---- ctp_api回调函数 ---- //
@@ -207,26 +210,28 @@ void CustomMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMar
 	std::cout << "最新价： " << pDepthMarketData->LastPrice << std::endl;
 	std::cout << "数量： " << pDepthMarketData->Volume << std::endl;
 	
-	char* colums = "trade_day,instrument_id,average_price,last_price,bid_price1,bid_volume1,bid_price2,bid_volume2,ask_price1,ask_volume1,ask_price2,ask_volume2,mark";
-	char values[300];
-	sprintf(values, "'%s','%s',%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,0",
-		pDepthMarketData->TradingDay,
-		pDepthMarketData->InstrumentID,
-		pDepthMarketData->AveragePrice > 999999999999 || pDepthMarketData->AveragePrice < -9999999999 ? 0.0 : pDepthMarketData->AveragePrice,
-		pDepthMarketData->LastPrice > 999999999999 || pDepthMarketData->LastPrice < -9999999999 ? 0.0 : pDepthMarketData->LastPrice,
-		pDepthMarketData->BidPrice1 > 999999999999 || pDepthMarketData->BidPrice1 < -9999999999 ? 0.0 : pDepthMarketData->BidPrice1,
-		pDepthMarketData->BidVolume1 > 999999999999 || pDepthMarketData->BidVolume1 < -9999999999 ? 0.0 : pDepthMarketData->BidVolume1,
-		pDepthMarketData->BidPrice2 > 999999999999 || pDepthMarketData->BidPrice2 < -9999999999 ? 0.0 : pDepthMarketData->BidPrice2,
-		pDepthMarketData->BidVolume2 > 999999999999 || pDepthMarketData->BidVolume2 < -9999999999 ? 0.0 : pDepthMarketData->BidVolume2,
-		pDepthMarketData->AskPrice1 > 999999999999 || pDepthMarketData->AskPrice1 < -9999999999 ? 0.0 : pDepthMarketData->AskPrice1,
-		pDepthMarketData->AskVolume1 > 999999999999 || pDepthMarketData->AskVolume1 < -9999999999 ? 0.0 : pDepthMarketData->AskVolume1,
-		pDepthMarketData->AskPrice2 > 99999999999 || pDepthMarketData->AskPrice2 < -99999999999 ? 0.0 : pDepthMarketData->AskPrice2,
-		pDepthMarketData->AskVolume2 > 999999999999 || pDepthMarketData->AskVolume2 < -9999999999 ? 0.0 : pDepthMarketData->AskVolume2);
-	MySQLOper mdb;
-	mdb.connect("localhost", "root", "1qaz2wsx");
-	mdb.usedb("clouddb01");
-	mdb.insertitem("market_data_rb", values, colums);
-	mdb.disconnect();
+	pool.enqueue([](CThostFtdcDepthMarketDataField *pDepthMarketData){
+		char* colums = "trade_day,instrument_id,average_price,last_price,bid_price1,bid_volume1,bid_price2,bid_volume2,ask_price1,ask_volume1,ask_price2,ask_volume2,mark";
+		char values[300];
+		sprintf(values, "'%s','%s',%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,0",
+			pDepthMarketData->TradingDay,
+			pDepthMarketData->InstrumentID,
+			pDepthMarketData->AveragePrice > 999999999999 || pDepthMarketData->AveragePrice < -9999999999 ? 0.0 : pDepthMarketData->AveragePrice,
+			pDepthMarketData->LastPrice > 999999999999 || pDepthMarketData->LastPrice < -9999999999 ? 0.0 : pDepthMarketData->LastPrice,
+			pDepthMarketData->BidPrice1 > 999999999999 || pDepthMarketData->BidPrice1 < -9999999999 ? 0.0 : pDepthMarketData->BidPrice1,
+			pDepthMarketData->BidVolume1 > 999999999999 || pDepthMarketData->BidVolume1 < -9999999999 ? 0.0 : pDepthMarketData->BidVolume1,
+			pDepthMarketData->BidPrice2 > 999999999999 || pDepthMarketData->BidPrice2 < -9999999999 ? 0.0 : pDepthMarketData->BidPrice2,
+			pDepthMarketData->BidVolume2 > 999999999999 || pDepthMarketData->BidVolume2 < -9999999999 ? 0.0 : pDepthMarketData->BidVolume2,
+			pDepthMarketData->AskPrice1 > 999999999999 || pDepthMarketData->AskPrice1 < -9999999999 ? 0.0 : pDepthMarketData->AskPrice1,
+			pDepthMarketData->AskVolume1 > 999999999999 || pDepthMarketData->AskVolume1 < -9999999999 ? 0.0 : pDepthMarketData->AskVolume1,
+			pDepthMarketData->AskPrice2 > 99999999999 || pDepthMarketData->AskPrice2 < -99999999999 ? 0.0 : pDepthMarketData->AskPrice2,
+			pDepthMarketData->AskVolume2 > 999999999999 || pDepthMarketData->AskVolume2 < -9999999999 ? 0.0 : pDepthMarketData->AskVolume2);
+		MySQLOper mdb;
+		mdb.connect("localhost", "root", "1qaz2wsx");
+		mdb.usedb("clouddb01");
+		mdb.insertitem("market_data_rb", values, colums);
+		mdb.disconnect();
+	}, pDepthMarketData);
 
 	// 如果只获取某一个合约行情，可以逐tick地存入文件或数据库
 	/*

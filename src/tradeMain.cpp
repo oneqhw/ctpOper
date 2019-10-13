@@ -1,9 +1,7 @@
 #include <iostream>
-#include <stdio.h>
 #include <string>
 #include <unordered_map>
 #include "CustomTradeSpi.h"
-#include "TickToKlineHelper.h"
 
 using namespace std;
 
@@ -12,10 +10,6 @@ using namespace std;
 
 // ---- 全局变量 ---- //
 // 公共参数
-//TThostFtdcBrokerIDType gBrokerID = "9999";                         // 模拟经纪商代码
-//TThostFtdcInvestorIDType gInvesterID = "";                         // 投资者账户名
-//TThostFtdcPasswordType gInvesterPassword = "";                     // 投资者密码
-
 
 // 交易参数
 CThostFtdcTraderApi *g_pTradeUserApi = nullptr;                    // 交易指针
@@ -23,8 +17,8 @@ char gTradeFrontAddr[] = "tcp://180.168.146.187:10101";            // 模拟交易前
 TThostFtdcInstrumentIDType g_pTradeInstrumentID = "zn1705";        // 所交易的合约代码
 TThostFtdcDirectionType gTradeDirection = THOST_FTDC_D_Sell;       // 买卖方向
 TThostFtdcPriceType gLimitPrice = 22735;                           // 交易价格
-/*
-int main()
+
+int tradeMain()
 {
 	// 账号密码
 	//cout << "请输入账号： ";
@@ -47,11 +41,6 @@ int main()
 	delete pTradeSpi;
 	g_pTradeUserApi->Release();
 
-	// 转换本地k线数据
-	//TickToKlineHelper tickToKlineHelper;
-	//tickToKlineHelper.KLineFromLocalData("market_data.csv", "K_line_data.csv");
-
 	getchar();
 	return 0;
 }
-*/

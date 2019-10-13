@@ -1,6 +1,4 @@
-
 #include <iostream>
-#include <stdio.h>
 #include <string>
 #include <unordered_map>
 #include "../CustomMdSpi.h"
@@ -14,9 +12,6 @@ using namespace std;
 // ---- 全局变量 ---- //
 // 公共参数
 TThostFtdcBrokerIDType gBrokerID = "9999";                         // 模拟经纪商代码
-//TThostFtdcInvestorIDType gInvesterID = "151139";                         // 投资者账户名
-//TThostFtdcPasswordType gInvesterPassword = "212354zlj";                     // 投资者密码
-
 TThostFtdcInvestorIDType gInvesterID = "008105";                         // 投资者账户名
 TThostFtdcPasswordType gInvesterPassword = "1";                     // 投资者密码
 
