@@ -10,8 +10,10 @@ using namespace std;
 
 // 行情参数
 CThostFtdcMdApi *g_pMdUserApi = nullptr;                           // 行情指针
-char gMdFrontAddr[] = "tcp://180.168.146.187:10111";               // 模拟行情前置地址
-char *g_pInstrumentID[] = { "rb1910" };							   // 行情合约代码列表，中、上、大、郑交易所各选一种
+//char gMdFrontAddr[] = "tcp://180.168.146.187:10111";               // 模拟行情前置地址
+char gMdFrontAddr[] = "tcp://180.168.146.187:10131";
+//char *g_pInstrumentID[] = { "rb1910" };							   // 行情合约代码列表，中、上、大、郑交易所各选一种
+char *g_pInstrumentID[] = { "rb2001" };
 int instrumentNum = 1;                                             // 行情合约订阅数量
 
 int mdiMain()
